@@ -1,8 +1,8 @@
 # LWEB-Homework2
 
 ## Autori
-- Cristian Buttaro ([@cristian03git](https://github.com/cristian03git))
 - Matteo Fiorentino ([@matteofiorentino03](https://github.com/matteofiorentino03))
+- Cristian Buttaro ([@cristian03git](https://github.com/cristian03git))
 
 ## Descrizione
 **LWEB-Homework2** è un piccolo **gestionale per una società di calcio** sviluppato in **PHP + MySQL** (con HTML/CSS). L’applicazione introduce un **backend** con **autenticazione**, **ruoli** (utente/admin), e **CRUD** su giocatori e maglie, oltre a un **flusso d’acquisto** con storico ordini.
