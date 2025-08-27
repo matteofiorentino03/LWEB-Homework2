@@ -1,0 +1,113 @@
+<?php
+session_start();
+
+if (isset($_GET['logout'])) {
+    session_unset();
+    session_destroy();
+    header("Location: entering.html");
+    exit();
+}
+
+if (!isset($_SESSION['Username'])) {
+    header("Location: entering.html");
+    exit();
+}
+
+$username = $_SESSION['Username'];
+$ruolo = $_SESSION['Ruolo'];
+$homepage_link = ($ruolo === 'admin') ? 'homepage_admin.php' : 'homepage_user.php';
+
+/* Connessione DB */
+$conn = new mysqli("localhost", "root", "", "playerbase2");
+if ($conn->connect_error) die("Connessione fallita: " . $conn->connect_error);
+
+/* Query maglie (includo Sponsor) */
+$sql = "SELECT tipo, stagione, taglia, costo_fisso, descrizione_maglia, Sponsor, path_immagine
+        FROM Maglie
+        ORDER BY stagione DESC, tipo ASC, taglia ASC";
+$result = $conn->query($sql);
+?>
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <title>Visualizza Maglie</title>
+  <link rel="stylesheet" href="styles/style_visualizzazione_g.css" />
+</head>
+<body>
+<header>
+  <a href="<?= htmlspecialchars($homepage_link) ?>" class="header-link">
+    <div class="logo-container">
+      <img src="img/AS_Roma_Logo_2017.svg.png" alt="Logo AS Roma" class="logo" />
+    </div>
+  </a>
+  <h1><a href="<?= htmlspecialchars($homepage_link) ?>" style="color:inherit;text-decoration:none;">PLAYERBASE</a></h1>
+  <div class="utente-container">
+    <div class="logout"><a href="?logout=true">Logout</a></div>
+  </div>
+</header>
+
+<div class="main-container">
+  <h1>Tutte le Maglie</h1>
+  <div class="table-wrapper">
+  <?php if ($result && $result->num_rows > 0): ?>
+    <table>
+      <thead>
+        <tr>
+          <th>Immagine</th>
+          <th>Tipo</th>
+          <th>Stagione</th>
+          <th>Taglia</th>
+          <th>Costo Fisso (€)</th>
+          <th>Sponsor</th>
+          <th>Descrizione</th>
+        </tr>
+      </thead>
+      <tbody>
+      <?php while ($row = $result->fetch_assoc()): ?>
+        <tr>
+          <td>
+            <?php
+              $rel = $row['path_immagine'] ?? '';
+              $abs = $rel ? __DIR__ . '/' . str_replace(['\\'], '/', $rel) : '';
+              if ($rel && is_file($abs)):
+            ?>
+            <img src="<?= htmlspecialchars($rel) ?>" alt="Maglia" class="img-maglia">
+            <?php else: ?>
+              <span style="color:grey;">Nessuna immagine</span>
+            <?php endif; ?>
+          </td>
+          <td><?= ucfirst(htmlspecialchars($row['tipo'])) ?></td>
+          <td><?= htmlspecialchars($row['stagione']) ?></td>
+          <td><?= htmlspecialchars($row['taglia']) ?></td>
+          <td><?= number_format((float)$row['costo_fisso'], 2, ',', '.') ?></td>
+          <td><?= htmlspecialchars($row['Sponsor'] ?? '') ?></td>
+          <td><?= htmlspecialchars($row['descrizione_maglia']) ?></td>
+        </tr>
+      <?php endwhile; ?>
+      </tbody>
+    </table>
+  <?php else: ?>
+    <p style="text-align:center;">Nessuna maglia trovata.</p>
+  <?php endif; ?>
+  </div>
+</div>
+
+<footer>
+  <p>&copy; 2025 Playerbase. Tutti i diritti riservati.</p>
+</footer>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const wrapper = document.querySelector('.table-wrapper');
+  if (!wrapper) return;
+  wrapper.addEventListener('wheel', function(e){
+    if (e.deltaY !== 0) {
+      e.preventDefault();
+      wrapper.scrollLeft += e.deltaX + e.deltaY;
+    }
+  }, { passive: false });
+});
+</script>
+</body>
+</html>
