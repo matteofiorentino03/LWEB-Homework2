@@ -1,8 +1,8 @@
 # LWEB-Homework2
 
 ## Autori
-- Cristian Buttaro ([@cristian03git](https://github.com/cristian03git))
 - Matteo Fiorentino ([@matteofiorentino03](https://github.com/matteofiorentino03))
+- Cristian Buttaro ([@cristian03git](https://github.com/cristian03git))
 
 ## Descrizione
 **PLAYERBASE** è un piccolo **gestionale per una società di calcio**(in questo caso l'A.S. Roma) sviluppato in **PHP + MySQL** (con HTML/CSS e JavaScript). 
