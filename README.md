@@ -1,8 +1,8 @@
 # LWEB-Homework2
 
 ## Autori
-- Matteo Fiorentino ([@matteofiorentino03](https://github.com/matteofiorentino03))
 - Cristian Buttaro ([@cristian03git](https://github.com/cristian03git))
+- Matteo Fiorentino ([@matteofiorentino03](https://github.com/matteofiorentino03))
 
 ## Descrizione
 **PLAYERBASE** è un piccolo **gestionale per una società di calcio**(in questo caso l'A.S. Roma) sviluppato in **PHP + MySQL** (con HTML/CSS e JavaScript). 
@@ -20,7 +20,7 @@ L’applicazione introduce un **backend** con **autenticazione**, **ruoli** (ute
 - Facendo il login (anche a seguito di una registrazione dell'account), oltre a vedere le pagine sopra citate, si possono fare le seguenti azioni:
   - Visualizzare lo **Storico degli acquisti effettuati** da quell'utente (`storico_acquisti_utente.php`) con la possibilità della **stampa di un singolo ordine** (`stampa_ordine.php`);
   - Effettuare le **Modifiche delle informazioni personali** dell'account(`modifica_info_utente.php`), con conseguente possibilità di effettuare una richiesta dei crediti ad un account admin;
-  - **Acquisto guidato** (`compra_maglia.php` → `conferma_acquisto.php`).
+  - **Acquisto guidato** (tramite `compra_maglia.php).
 
 ### Per gli amministratori:
 Dopo aver effettuato l'accesso in `login.php`, l'admin, entrando in `homepage_admin.php`, può compiere le seguenti azioni:
@@ -40,23 +40,48 @@ Dopo aver effettuato l'accesso in `login.php`, l'admin, entrando in `homepage_ad
 - Visualizzare lo **Storico degli acquisti effettuati** da tutti gli utenti (`storico_acquisti.php`);
 - Visualizzare lo **Storico degli inserimenti effettuati** da tutti gli utenti admin (`storico_inserimenti.php`).
 
-## Setup per il database:
-L'utente amministratore deve possedere i seguenti prerequisiti:
-- **PHP** 8.x (estensione `mysqli` attiva);
-- **MySQL/MariaDB** 10.x+;
-- **Server web** (Apache consigliato; va bene XAMPP/MAMP/WAMP o Docker);
-- **Browser moderno**, come Google Chrome.
-Una volta creato l'account utente del server locale (con tutti i privilegi concessi e selezionato tutti i privilegi) su phpMyAdmin, tramite `install.php`, viene creato tutto lo schema e le tabelle, con i dati d'esempio.
-Una volta caricati i dati, dopo aver effettuato l'autenticazione su `install.php`, l'amministratore può visionare il sito.
-> **Suggerimento:** se usi XAMPP, accertati che Apache e MySQL siano attivi e che `extension=mysqli` sia abilitata nel `php.ini`.
+## Setup del Database
 
-Il sito sarà visionabile SOLTANTO SE l'amministratore ha posizionato tutta questa cartella di git, all'interno di httdocs (aprendola da XAMPP):<br>
---> **Clona la repo** nella cartella servita da Apache (es. `htdocs`):
+Per utilizzare correttamente l’applicazione, assicurati di avere i seguenti prerequisiti:
+
+- **PHP** 8.x (con estensione `mysqli` abilitata)  
+- **MySQL/MariaDB** 10.x o superiore  
+- **Server web** (Apache consigliato; vanno bene XAMPP, MAMP, WAMP o Docker)  
+- **Browser moderno** (es. Google Chrome)
+
+### 1. `connect.php`
+
+Tutte le pagine usano **un unico punto di accesso** al database:  
+`connect.php`.  
+
+- Centralizza le credenziali (`host`, `username`, `password`, `dbname`).  
+- In fase di sviluppo si connette come **root** (senza password) su `localhost`.  
+- Dopo l’installazione, carica automaticamente le credenziali da **`config.php`** (generato da `install.php`).  
+
+In questo modo non è necessario modificare ogni script quando cambiano i dati di connessione: basta aggiornare `config.php`.
+
+
+### 2. `install.php`
+
+Serve ad **inizializzare il database**.  
+
+- Si collega al server MySQL come **root** (senza password).  
+- Crea lo schema `playerbase2` e tutte le tabelle richieste.  
+- Inserisce i dati di esempio (utenti di default, giocatori, maglie, ecc.).  
+- Genera automaticamente un file **`config.php`**, usato poi da `connect.php` per tutte le connessioni successive.  
+
+⚠️ **Attenzione:** l’installazione ricrea lo schema da zero. Tutti i dati precedenti andranno persi.  
+
+
+### 3. Avvio del sito
+
+1. Clona la repository nella cartella servita da Apache (`htdocs` in XAMPP, `MAMP/htdocs`, ecc.):  
    ```bash
    git clone https://github.com/cristian03git/LWEB-Homework2.git
-   ```
 
-## Struttura della cartella `LWEB-Homework2`:
+---
+
+## Struttura della cartella:
 All'interno di questa cartella, oltre alle pagine sopra citate, sono presenti altre due cartelle: 
 - `img/` – asset grafici (loghi, immagini prodotto, icone).
 - `styles/` – fogli di stile CSS.
