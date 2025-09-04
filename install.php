@@ -1,21 +1,23 @@
 <?php
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $host = $_POST['host'];
-    $username = $_POST['username'];
-    $password = $_POST['password'];
+require_once __DIR__ . '/connect.php';
 
-    // Connessione al server MySQL
-    $conn = new mysqli($host, $username, $password);
-    if ($conn->connect_error) {
-        die("Connessione fallita: " . $conn->connect_error);
-    }
+/* Connessione al SERVER MySQL come root (senza password), senza selezionare DB */
+try {
+    $connServer = server();   // usa connect.php
+    $connMsg    = "Connessione al server MySQL effettuata (root, senza password) tramite connect.php.";
+} catch (Throwable $e) {
+    die("Connessione al server MySQL fallita: " . $e->getMessage());
+}
+
+/* Se è stato premuto il pulsante di installazione, procedo a creare DB, tabelle e dati */
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Crea DB e seleziona
-    if (!$conn->query("CREATE DATABASE IF NOT EXISTS playerbase2")) {
-        die("Errore creazione database: " . $conn->error);
+    if (!$connServer->query("CREATE DATABASE IF NOT EXISTS playerbase2")) {
+        die("Errore creazione database: " . $connServer->error);
     }
-    if (!$conn->select_db("playerbase2")) {
-        die("Errore selezione database: " . $conn->error);
+    if (!$connServer->select_db("playerbase2")) {
+        die("Errore selezione database: " . $connServer->error);
     }
 
     // Disabilito i FK durante il drop
@@ -168,7 +170,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         FOREIGN KEY (ID_Maglia) REFERENCES Maglie(ID)
     );
     ";
-
+    
+    // 2) connessione al DB creato
+    $conn = db(); // usa connect.php (root/localhost/playerbase2)
+    
+    // 3) BEGIN TRANSACTION
     $conn->begin_transaction();
     try {
         // Crea schema
@@ -464,6 +470,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Tutto ok
         $conn->commit();
 
+        $configContent = "<?php\nreturn [\n" .
+        "    'host' => 'localhost',\n" .
+        "    'user' => 'root',\n" .
+        "    'pass' => '',\n" .
+        "    'name' => 'playerbase2',\n" .
+        "];\n";
+
+        if (file_put_contents(__DIR__ . '/config.php', $configContent) === false) {
+        throw new Exception("Impossibile scrivere config.php");
+        }
+
         // Messaggio + redirect
         echo "<script>
             alert('Installazione completata con successo!');
@@ -471,18 +488,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </script>";
         exit;
 
-    } catch (Exception $e) {
+    }catch (Exception $e) {
         $conn->rollback();
         die('Installazione annullata: ' . $e->getMessage());
     } finally {
         $conn->close();
     }
+    
 }
 ?>
+<p style="padding:10px;background:#e8ffe8;border:1px solid #9fd09f;">
+  <?php echo htmlspecialchars($connMsg); ?>
+</p>
+
 <form method="post">
-    <h2>Configurazione Database</h2>
-    <label>Host: <input type="text" name="host" value="localhost" required></label><br><br>
-    <label>Username: <input type="text" name="username" required></label><br><br>
-    <label>Password: <input type="password" name="password"></label><br><br>
-    <input type="submit" value="Installa Database">
+  <input type="hidden" name="host" value="localhost" />
+  <input type="hidden" name="username" value="root" />
+  <input type="hidden" name="password" value="" />
+  <button type="submit">Avvia installazione del database</button>
 </form>

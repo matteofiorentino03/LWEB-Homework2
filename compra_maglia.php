@@ -8,8 +8,13 @@ if (!isset($_SESSION['Username'])) {
 }
 
 /* ===== Connessione DB ===== */
-$conn = new mysqli("localhost", "root", "", "playerbase2");
-if ($conn->connect_error) die("Connessione fallita: " . $conn->connect_error);
+require_once __DIR__ . '/connect.php';
+
+try {
+    $conn = db();   // usa la funzione definita in connect.php
+} catch (Throwable $e) {
+    die("Errore DB: " . $e->getMessage());
+}
 
 /* ===== Ricavo utente loggato ===== */
 $sqlUser = "SELECT ID, username, crediti, ruolo FROM Utenti WHERE username = ?";

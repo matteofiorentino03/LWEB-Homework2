@@ -13,9 +13,14 @@ if (isset($_GET['logout'])) {
 $ruolo = $_SESSION['Ruolo'] ?? 'utente';
 $homepage_link = ($ruolo === 'admin') ? 'homepage_admin.php' : 'homepage_user.php';
 
-/* DB */
-$conn = new mysqli("localhost", "root", "", "playerbase2");
-if ($conn->connect_error) die("Connessione fallita: " . $conn->connect_error);
+/* ================= DB ================= */
+require_once __DIR__ . '/connect.php';
+
+try {
+    $conn = db();   // usa la funzione definita in connect.php
+} catch (Throwable $e) {
+    die("Errore DB: " . $e->getMessage());
+}
 
 /* --- Storico GIOCATORI (Agisce + Utenti + Giocatori) --- */
 $sqlGioc = "

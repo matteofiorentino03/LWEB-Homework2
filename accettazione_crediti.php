@@ -16,9 +16,14 @@ if (!isset($_SESSION['Username']) || strtolower($_SESSION['Ruolo'] ?? '') !== 'a
 
 $homepage_link = 'homepage_admin.php';
 
-/* ================== DB ================== */
-$conn = new mysqli("localhost", "root", "", "playerbase2");
-if ($conn->connect_error) die("Connessione fallita: " . $conn->connect_error);
+/* ================= DB ================= */
+require_once __DIR__ . '/connect.php';
+
+try {
+    $conn = db();   // usa la funzione definita in connect.php
+} catch (Throwable $e) {
+    die("Errore DB: " . $e->getMessage());
+}
 
 $msg_ok = $_SESSION['flash_ok'] ?? '';
 $msg_err = $_SESSION['flash_err'] ?? '';

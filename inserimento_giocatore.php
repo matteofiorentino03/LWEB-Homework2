@@ -17,10 +17,13 @@ $username = $_SESSION['Username'];
 $ruolo = $_SESSION['Ruolo'];
 $homepage_link = ($ruolo === 'admin') ? 'homepage_admin.php' : 'homepage_user.php';
 
-// Connessione al database
-$conn = new mysqli("localhost", "root", "", "playerbase2");
-if ($conn->connect_error) {
-    die("Connessione fallita: " . $conn->connect_error);
+/* ================= DB ================= */
+require_once __DIR__ . '/connect.php';
+
+try {
+    $conn = db();   // usa la funzione definita in connect.php
+} catch (Throwable $e) {
+    die("Errore DB: " . $e->getMessage());
 }
 
 $errore = "";

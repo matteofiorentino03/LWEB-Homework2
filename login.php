@@ -1,15 +1,14 @@
 <?php
 session_start();
 
-// Connessione al database
-$servername = "localhost";
-$username_db = "root";
-$password_db = "";
-$dbname = "playerbase2";
+require_once __DIR__ . '/connect.php';
 
-$conn = new mysqli($servername, $username_db, $password_db, $dbname);
-if ($conn->connect_error) {
-    die("Connessione fallita: " . $conn->connect_error);
+try {
+    $conn = db();
+    $res = $conn->query("SELECT COUNT(*) AS n FROM " . TB_UTENTI);
+    $row = $res->fetch_assoc();
+} catch (Throwable $e) {
+    die("Errore DB: " . $e->getMessage());
 }
 
 $errore = "";

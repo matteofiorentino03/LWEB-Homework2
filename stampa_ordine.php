@@ -11,9 +11,14 @@ $loggedUser = $_SESSION['Username'];
 $ruolo = isset($_SESSION['Ruolo']) ? strtolower($_SESSION['Ruolo']) : null;
 $isAdmin = ($ruolo === 'admin');
 
-/* DB */
-$conn = new mysqli("localhost", "root", "", "playerbase2");
-if ($conn->connect_error) die("Connessione fallita: " . $conn->connect_error);
+/* ================= DB ================= */
+require_once __DIR__ . '/connect.php';
+
+try {
+    $conn = db();   // usa la funzione definita in connect.php
+} catch (Throwable $e) {
+    die("Errore DB: " . $e->getMessage());
+}
 
 /* ID ordine */
 if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {

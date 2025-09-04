@@ -15,9 +15,14 @@ if (isset($_GET['logout'])) {
     exit();
 }
 
-/* DB */
-$mysqli = new mysqli("localhost", "root", "", "playerbase2");
-if ($mysqli->connect_error) die("Connessione fallita: " . $mysqli->connect_error);
+require_once __DIR__ . '/connect.php';
+
+try {
+    $conn = db();            // connessione centralizzata
+    $mysqli = $conn;         // <-- alias, così non devi toccare altro codice che usa $mysqli
+} catch (Throwable $e) {
+    die("Errore DB: " . $e->getMessage());
+}
 
 $errore = "";
 $successo = "";

@@ -21,9 +21,13 @@ $username_db = "root";
 $password_db = "";
 $dbname      = "playerbase2"; // <-- cambia in "playerbase" se serve
 
-$conn = new mysqli($servername, $username_db, $password_db, $dbname);
-if ($conn->connect_error) {
-    die("Connessione fallita: " . $conn->connect_error);
+/* ================= DB ================= */
+require_once __DIR__ . '/connect.php';
+
+try {
+    $conn = db();   // usa la funzione definita in connect.php
+} catch (Throwable $e) {
+    die("Errore DB: " . $e->getMessage());
 }
 
 /* Preleva i dati dalla tabella Utenti */

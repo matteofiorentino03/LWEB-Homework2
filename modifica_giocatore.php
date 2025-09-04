@@ -6,9 +6,13 @@ if (!isset($_SESSION['Username']) || $_SESSION['Ruolo'] !== 'admin') {
     exit();
 }
 
-$conn = new mysqli("localhost", "root", "", "playerbase2");
-if ($conn->connect_error) {
-    die("Connessione fallita: " . $conn->connect_error);
+/* ================= DB ================= */
+require_once __DIR__ . '/connect.php';
+
+try {
+    $conn = db();   // usa la funzione definita in connect.php
+} catch (Throwable $e) {
+    die("Errore DB: " . $e->getMessage());
 }
 
 $errore = "";

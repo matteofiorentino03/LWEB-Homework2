@@ -15,10 +15,14 @@ if (isset($_GET['logout'])) {
     exit();
 }
 
-/* ===== DB ===== */
-$conn = new mysqli("localhost", "root", "", "playerbase2");
-if ($conn->connect_error) die("Connessione fallita: " . $conn->connect_error);
+/* ================= DB ================= */
+require_once __DIR__ . '/connect.php';
 
+try {
+    $conn = db();   // usa la funzione definita in connect.php
+} catch (Throwable $e) {
+    die("Errore DB: " . $e->getMessage());
+}
 /* ===== Query: gruppi tipo+stagione con taglie e 1 immagine =====
    NB: se il costo_fisso può variare per taglia, mostriamo il MIN e il MAX.
 */

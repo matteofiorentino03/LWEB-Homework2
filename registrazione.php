@@ -1,16 +1,11 @@
 <?php
-// Connessione al database
-$servername = "localhost";
-$username_db = "root";
-$password_db = "";
-$dbname = "playerbase2";
+/* ================= DB ================= */
+require_once __DIR__ . '/connect.php';
 
-// Crea connessione
-$conn = new mysqli($servername, $username_db, $password_db, $dbname);
-
-// Verifica connessione
-if ($conn->connect_error) {
-    die("Connessione fallita: " . $conn->connect_error);
+try {
+    $conn = db();   // usa la funzione definita in connect.php
+} catch (Throwable $e) {
+    die("Errore DB: " . $e->getMessage());
 }
 
 // Verifica se il modulo di registrazione è stato inviato
